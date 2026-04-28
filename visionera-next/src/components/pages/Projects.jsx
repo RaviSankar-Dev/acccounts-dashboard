@@ -101,12 +101,15 @@ const ProjectCard = ({ project, onManage }) => {
 };
 
 const Projects = () => {
-  const { projects, addProject } = useData();
+  const { projects, addProject, updateProject } = useData();
   const { addToast } = useToast();
   
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newProject, setNewProject] = useState({ name: '', client: '', deadline: '' });
+  
+  const [isManageModalOpen, setIsManageModalOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState(null);
 
   const filteredProjects = useMemo(() => {
     return projects.filter(p => 
@@ -133,6 +136,18 @@ const Projects = () => {
     addToast('New project initialized!', 'success');
     setIsModalOpen(false);
     setNewProject({ name: '', client: '', deadline: '' });
+  };
+
+  const handleOpenManage = (proj) => {
+    setEditingProject({ ...proj });
+    setIsManageModalOpen(true);
+  };
+
+  const handleUpdateProject = async () => {
+    if (!editingProject) return;
+    await updateProject(editingProject);
+    addToast('Project workflow updated!', 'success');
+    setIsManageModalOpen(false);
   };
 
   return (
@@ -179,7 +194,7 @@ const Projects = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
         <AnimatePresence mode="popLayout">
           {filteredProjects.map((p) => (
-            <ProjectCard key={p.id} project={p} onManage={(proj) => addToast(`Opening workflow for ${proj.name}`, 'warning')} />
+            <ProjectCard key={p.id} project={p} onManage={handleOpenManage} />
           ))}
         </AnimatePresence>
       </div>
@@ -220,6 +235,55 @@ const Projects = () => {
           />
         </div>
       </Modal>
+
+      {/* Manage Project Workflow Modal */}
+      {editingProject && (
+        <Modal
+          isOpen={isManageModalOpen}
+          onClose={() => setIsManageModalOpen(false)}
+          title={`Manage: ${editingProject.name}`}
+          footer={
+            <div className="flex gap-3 w-full">
+              <Button variant="secondary" className="flex-1" onClick={() => setIsManageModalOpen(false)}>Cancel</Button>
+              <Button className="flex-1" onClick={handleUpdateProject}>Save Workflow Update</Button>
+            </div>
+          }
+        >
+          <div className="space-y-5 py-2">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Progress ({editingProject.progress}%)</label>
+              <input 
+                type="range" 
+                min="0" 
+                max="100" 
+                value={editingProject.progress} 
+                onChange={(e) => setEditingProject({...editingProject, progress: parseInt(e.target.value)})}
+                className="w-full accent-primary-500"
+              />
+            </div>
+            
+            <Select 
+              label="Project Status"
+              value={editingProject.status}
+              onChange={(e) => setEditingProject({...editingProject, status: e.target.value})}
+              className="h-12 rounded-2xl"
+            >
+              <option value="On Track">On Track</option>
+              <option value="At Risk">At Risk</option>
+              <option value="Overdue">Overdue</option>
+              <option value="Completed">Completed</option>
+            </Select>
+
+            <Input 
+              label="Extend Deadline" 
+              type="date"
+              value={editingProject.deadline}
+              onChange={(e) => setEditingProject({...editingProject, deadline: e.target.value})}
+              className="h-12"
+            />
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

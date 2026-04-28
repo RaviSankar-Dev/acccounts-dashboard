@@ -69,6 +69,15 @@ export const DataProvider = ({ children }) => {
     });
   };
 
+  const updateProject = async (updatedProject) => {
+    setProjects(projects.map(p => p.id === updatedProject.id ? updatedProject : p));
+    await fetch('/api/projects', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedProject),
+    });
+  };
+
   const addTransaction = async (t) => {
     setTransactions([t, ...transactions]);
     await fetch('/api/transactions', {
@@ -91,7 +100,7 @@ export const DataProvider = ({ children }) => {
     <DataContext.Provider value={{
       quotations, addQuotation,
       deals, addDeal,
-      projects, addProject,
+      projects, addProject, updateProject,
       transactions, addTransaction,
       expenses, addExpense,
       loading,

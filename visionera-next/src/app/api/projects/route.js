@@ -27,3 +27,16 @@ export async function POST(request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
+export async function PUT(request) {
+  try {
+    const data = await request.json();
+    await client.execute({
+      sql: 'UPDATE projects SET name=?, client=?, progress=?, deadline=?, status=?, team=? WHERE id=?',
+      args: [data.name, data.client, data.progress, data.deadline, data.status, JSON.stringify(data.team), data.id]
+    });
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
