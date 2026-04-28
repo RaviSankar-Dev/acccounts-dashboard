@@ -3,10 +3,18 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    const saved = localStorage.getItem('darkMode');
-    return saved ? JSON.parse(saved) : window.matchMedia('(prefers-color-scheme: dark)').matches;
-  });
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('darkMode');
+      if (saved) {
+        setIsDarkMode(JSON.parse(saved));
+      } else {
+        setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const root = window.document.documentElement;
