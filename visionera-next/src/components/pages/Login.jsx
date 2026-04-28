@@ -1,20 +1,28 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { ShieldCheck, Lock, Mail, ArrowRight, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Forms';
 import { motion } from 'framer-motion';
 
 const Login = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleLogin = (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    setTimeout(() => {
-      navigate('/');
-    }, 1500);
+    if (email === 'admin@visionera.com' && password === 'admin123') {
+      setIsLoading(true);
+      setError('');
+      setTimeout(() => {
+        router.push('/');
+      }, 1500);
+    } else {
+      setError('Invalid credentials. Use admin@visionera.com / admin123');
+    }
   };
 
   return (
@@ -38,11 +46,18 @@ const Login = () => {
 
         <div className="glass-card p-8 border-white/40 dark:border-slate-800/50 shadow-2xl">
           <form onSubmit={handleLogin} className="space-y-6">
+            {error && (
+              <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-medium text-center">
+                {error}
+              </div>
+            )}
             <Input 
               label="Email Address" 
               placeholder="admin@visionera.com" 
               type="email" 
               required 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               icon={<Mail size={18} />}
             />
             <Input 
@@ -50,6 +65,8 @@ const Login = () => {
               placeholder="••••••••" 
               type="password" 
               required 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               icon={<Lock size={18} />}
             />
 
