@@ -27,7 +27,13 @@ const Quotations = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newQuotation, setNewQuotation] = useState({ client: '', project: '', amount: '' });
+  const [newQuotation, setNewQuotation] = useState({ client: '', project: '', actualPrice: '', discount: '' });
+
+  const totalAmount = useMemo(() => {
+    const price = Number(newQuotation.actualPrice) || 0;
+    const disc = Number(newQuotation.discount) || 0;
+    return Math.max(0, price - disc);
+  }, [newQuotation.actualPrice, newQuotation.discount]);
 
   const filteredQuotations = useMemo(() => {
     return quotations.filter(q => {
@@ -39,15 +45,15 @@ const Quotations = () => {
 
   const handleCreateQuotation = async (e) => {
     e.preventDefault();
-    if (!newQuotation.client || !newQuotation.amount) {
-      addToast('Please provide client and amount', 'error');
+    if (!newQuotation.client || !newQuotation.actualPrice) {
+      addToast('Please provide client and actual price', 'error');
       return;
     }
     
     const quotation = {
       id: `QT-2024-${Math.floor(Math.random() * 1000)}`,
       ...newQuotation,
-      amount: Number(newQuotation.amount),
+      amount: totalAmount,
       status: 'Sent',
       date: new Date().toISOString().split('T')[0]
     };
@@ -55,7 +61,47 @@ const Quotations = () => {
     await addQuotation(quotation);
     addToast('Quotation generated and saved!', 'success');
     setIsModalOpen(false);
-    setNewQuotation({ client: '', project: '', amount: '' });
+    setNewQuotation({ client: '', project: '', actualPrice: '', discount: '' });
+  };
+
+  const handleDownloadPDF = (qt) => {
+    const printWindow = window.open('', '', 'width=800,height=600');
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Quotation ${qt.id}</title>
+          <style>
+            body { font-family: system-ui, sans-serif; padding: 40px; color: #333; }
+            .header { text-align: center; margin-bottom: 40px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
+            .details { margin-bottom: 30px; }
+            .total { font-size: 24px; font-weight: bold; margin-top: 30px; border-top: 2px solid #eee; padding-top: 20px; text-align: right; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>Official Quotation</h1>
+            <p>ID: ${qt.id} | Date: ${qt.date}</p>
+          </div>
+          <div class="details">
+            <p><strong>Client:</strong> ${qt.client}</p>
+            <p><strong>Project:</strong> ${qt.project}</p>
+            <p><strong>Status:</strong> ${qt.status}</p>
+          </div>
+          <table style="width:100%; text-align:left; border-collapse:collapse;">
+            <tr style="background:#eee;"><th style="padding:10px;">Description</th><th style="padding:10px;text-align:right;">Amount</th></tr>
+            <tr><td style="padding:10px;">${qt.project}</td><td style="padding:10px;text-align:right;">₹${qt.actualPrice || qt.amount}</td></tr>
+            ${qt.discount ? `<tr><td style="padding:10px;">Discount</td><td style="padding:10px;text-align:right;color:red;">- ₹${qt.discount}</td></tr>` : ''}
+          </table>
+          <div class="total">
+            Total Amount: ₹${qt.amount.toLocaleString()}
+          </div>
+          <script>
+            window.onload = () => { window.print(); window.close(); }
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
   };
 
   const getStatusBadge = (status) => {
@@ -154,7 +200,7 @@ const Quotations = () => {
                           <Mail size={18} />
                         </button>
                         <button 
-                          onClick={() => addToast('Downloading PDF...', 'warning')}
+                          onClick={() => handleDownloadPDF(qt)}
                           className="p-2 text-slate-400 hover:text-primary-500 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-500/10 transition-all"
                         >
                           <Download size={18} />
@@ -201,14 +247,28 @@ const Quotations = () => {
             onChange={(e) => setNewQuotation({...newQuotation, project: e.target.value})}
             className="h-12"
           />
-          <Input 
-            label="Quote Amount (₹)" 
-            type="number" 
-            placeholder="0.00" 
-            value={newQuotation.amount}
-            onChange={(e) => setNewQuotation({...newQuotation, amount: e.target.value})}
-            className="h-12"
-          />
+          <div className="grid grid-cols-2 gap-4">
+            <Input 
+              label="Actual Price (₹)" 
+              type="number" 
+              placeholder="0.00" 
+              value={newQuotation.actualPrice}
+              onChange={(e) => setNewQuotation({...newQuotation, actualPrice: e.target.value})}
+              className="h-12"
+            />
+            <Input 
+              label="Discount (₹)" 
+              type="number" 
+              placeholder="0.00" 
+              value={newQuotation.discount}
+              onChange={(e) => setNewQuotation({...newQuotation, discount: e.target.value})}
+              className="h-12"
+            />
+          </div>
+          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center border border-slate-200 dark:border-dark-border">
+            <span className="text-sm font-bold text-slate-500 uppercase tracking-widest">Total Amount</span>
+            <span className="text-2xl font-black text-primary-500">₹{totalAmount.toLocaleString()}</span>
+          </div>
         </div>
       </Modal>
     </div>
