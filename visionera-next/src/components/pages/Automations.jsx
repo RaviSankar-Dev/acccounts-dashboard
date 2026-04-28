@@ -13,8 +13,8 @@ import {
   History,
   RotateCcw
 } from 'lucide-react';
-import { Button } from '../components/ui/Button';
-import { Badge } from '../components/ui/Forms';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Forms';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const MOCK_AUTOMATIONS = [

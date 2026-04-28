@@ -16,12 +16,9 @@ import { Button } from '@/components/ui/Button';
 import { Badge, Input } from '@/components/ui/Forms';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const MOCK_EMPLOYEES = [
-  { id: 'EMP-001', name: 'Arjun Mehta', role: 'Sr. Developer', salary: 85000, status: 'Paid', date: '2026-04-01' },
-  { id: 'EMP-002', name: 'Sneha Rao', role: 'UI Designer', salary: 65000, status: 'Paid', date: '2026-04-01' },
-  { id: 'EMP-003', name: 'Rohan Varma', role: 'Marketing', salary: 45000, status: 'Pending', date: '2026-05-01' },
-  { id: 'EMP-004', name: 'Priya Singh', role: 'Project Manager', salary: 75000, status: 'Pending', date: '2026-05-01' },
-];
+import { useData } from '@/hooks/useData';
+
+const MOCK_EMPLOYEES = [];
 
 const DIRECTORS = [
   { name: 'Director A', share: 40, color: 'bg-indigo-500' },
@@ -30,8 +27,21 @@ const DIRECTORS = [
 ];
 
 const Payroll = () => {
+  const { deals, expenses } = useData();
   const [activeTab, setActiveTab] = useState('employees');
-  const [totalProfit, setTotalProfit] = useState(500000);
+  
+  const calculatedProfit = useMemo(() => {
+    const rev = deals?.reduce((sum, d) => sum + d.total, 0) || 0;
+    const exp = expenses?.reduce((sum, e) => sum + e.amount, 0) || 0;
+    return Math.max(0, rev - exp);
+  }, [deals, expenses]);
+
+  const [totalProfit, setTotalProfit] = useState(calculatedProfit);
+
+  // Update input if calculated profit changes
+  React.useEffect(() => {
+    setTotalProfit(calculatedProfit);
+  }, [calculatedProfit]);
 
   const salaryStats = useMemo(() => {
     const paid = MOCK_EMPLOYEES.filter(e => e.status === 'Paid').reduce((acc, curr) => acc + curr.salary, 0);

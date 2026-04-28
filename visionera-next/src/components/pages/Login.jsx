@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShieldCheck, Lock, Mail, ArrowRight, BarChart3 } from 'lucide-react';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Forms';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Forms';
 import { motion } from 'framer-motion';
 
 const Login = () => {

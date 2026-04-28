@@ -58,9 +58,9 @@ const Accounts = () => {
   const [newTrx, setNewTrx] = useState({ client: '', account: 'HDFC Corporate', amount: '', type: 'Credit', mode: 'Bank Transfer' });
 
   const ACCOUNTS_CONFIG = [
-    { id: 1, name: 'HDFC Corporate', type: 'Bank', baseBalance: 450000, color: 'bg-indigo-600', icon: CreditCard },
-    { id: 2, name: 'Office Cash', type: 'Cash', baseBalance: 25000, color: 'bg-emerald-600', icon: Banknote },
-    { id: 3, name: 'Business UPI', type: 'UPI', baseBalance: 85000, color: 'bg-purple-600', icon: Smartphone },
+    { id: 1, name: 'HDFC Corporate', type: 'Bank', baseBalance: 0, color: 'bg-indigo-600', icon: CreditCard },
+    { id: 2, name: 'Office Cash', type: 'Cash', baseBalance: 0, color: 'bg-emerald-600', icon: Banknote },
+    { id: 3, name: 'Business UPI', type: 'UPI', baseBalance: 0, color: 'bg-purple-600', icon: Smartphone },
   ];
 
   const accountBalances = useMemo(() => {
