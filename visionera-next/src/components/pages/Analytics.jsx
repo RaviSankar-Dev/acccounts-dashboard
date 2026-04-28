@@ -21,8 +21,8 @@ import {
   Globe,
   PieChart as PieChartIcon
 } from 'lucide-react';
-import { Button } from '../components/ui/Button';
-import { Badge } from '../components/ui/Forms';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Forms';
 import { motion } from 'framer-motion';
 
 import { useData } from '@/hooks/useData';

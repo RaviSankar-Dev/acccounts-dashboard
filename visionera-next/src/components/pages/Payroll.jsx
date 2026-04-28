@@ -12,8 +12,8 @@ import {
   CheckCircle2,
   Clock
 } from 'lucide-react';
-import { Button } from '../components/ui/Button';
-import { Badge, Input } from '../components/ui/Forms';
+import { Button } from '@/components/ui/Button';
+import { Badge, Input } from '@/components/ui/Forms';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const MOCK_EMPLOYEES = [
