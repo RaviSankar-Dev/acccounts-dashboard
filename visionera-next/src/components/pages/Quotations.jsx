@@ -65,38 +65,213 @@ const Quotations = () => {
   };
 
   const handleDownloadPDF = (qt) => {
-    const printWindow = window.open('', '', 'width=800,height=600');
+    const printWindow = window.open('', '', 'width=800,height=1100');
+    
+    // Formatting numbers with commas
+    const fmt = (num) => Number(num).toLocaleString('en-IN');
+    
+    // Constructing exact layout
     printWindow.document.write(`
       <html>
         <head>
           <title>Quotation ${qt.id}</title>
+          <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
           <style>
-            body { font-family: system-ui, sans-serif; padding: 40px; color: #333; }
-            .header { text-align: center; margin-bottom: 40px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
-            .details { margin-bottom: 30px; }
-            .total { font-size: 24px; font-weight: bold; margin-top: 30px; border-top: 2px solid #eee; padding-top: 20px; text-align: right; }
+            @page { size: A4; margin: 0; }
+            body { 
+              font-family: 'Montserrat', sans-serif; 
+              margin: 0; 
+              padding: 0; 
+              background: #fff;
+              color: #111;
+              position: relative;
+              width: 210mm;
+              height: 297mm;
+              box-sizing: border-box;
+            }
+            .content-wrapper { padding: 40mm 20mm 30mm 20mm; position: relative; z-index: 10; height: 100%; box-sizing: border-box;}
+            
+            /* Background Waves */
+            .top-wave { position: absolute; top: 0; right: 0; width: 100%; z-index: 1; }
+            .bottom-wave { position: absolute; bottom: 0; left: 0; width: 100%; z-index: 1; }
+
+            /* Header / Logo Area */
+            .logo-area { text-align: center; margin-bottom: 25px; }
+            .logo-icon { width: 120px; height: auto; margin-bottom: 5px; }
+            .company-name { font-size: 24px; font-weight: 800; color: #1e3a8a; letter-spacing: 1px; margin: 0; }
+            .company-sub { font-size: 11px; color: #475569; letter-spacing: 0.5px; margin: 0; }
+            
+            /* Title Area */
+            .title-area { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px; }
+            .doc-title { font-size: 16px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 3px; margin: 0; }
+            .doc-date { font-size: 12px; font-weight: 700; margin: 0; }
+            
+            /* Table */
+            table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 11px; }
+            th, td { border: 1px solid #333; padding: 10px; text-align: center; }
+            th { background-color: #eadab8; font-weight: 700; }
+            td:nth-child(2) { text-align: left; font-weight: 500; }
+            
+            /* Summary & Terms Area */
+            .bottom-grid { display: grid; grid-template-columns: 1fr 220px; gap: 30px; margin-top: 10px; }
+            
+            /* Summary Table */
+            .summary { text-align: right; font-size: 12px; font-weight: 700; }
+            .summary-row { display: flex; justify-content: space-between; padding: 4px 0; }
+            .summary-row.total-row { 
+              border-top: 2px solid #000; 
+              border-bottom: 2px solid #000; 
+              padding: 8px 0; 
+              margin-top: 8px; 
+              font-size: 13px;
+            }
+            .summary-val { width: 100px; text-align: center; }
+            
+            /* Terms */
+            .terms { font-size: 8px; color: #333; line-height: 1.4; padding-right: 20px;}
+            .terms h4 { font-size: 9px; font-weight: 700; margin: 0 0 5px 0; }
+            .terms ul { padding-left: 12px; margin: 0; }
+            .terms li { margin-bottom: 4px; }
+            
+            /* Signature */
+            .signature-area { text-align: center; margin-top: 40px; position: relative; }
+            .stamp { position: absolute; right: 40px; top: -30px; width: 80px; opacity: 0.8; }
+            .signature-img { width: 120px; margin-bottom: -15px; position: relative; z-index: 2; }
+            .auth-text { font-size: 10px; color: #333; border-top: 1px dashed #999; display: inline-block; padding-top: 5px; width: 140px; }
           </style>
         </head>
         <body>
-          <div class="header">
-            <h1>Official Quotation</h1>
-            <p>ID: ${qt.id} | Date: ${qt.date}</p>
+          <!-- Top Waves SVG -->
+          <svg class="top-wave" viewBox="0 0 800 200" preserveAspectRatio="none">
+            <path d="M400,0 C600,0 700,100 800,50 L800,0 L0,0 Z" fill="#6d2828" />
+            <path d="M500,0 C650,20 750,150 800,100 L800,0 L0,0 Z" fill="#d97706" />
+          </svg>
+
+          <!-- Bottom Waves SVG -->
+          <svg class="bottom-wave" viewBox="0 0 800 200" preserveAspectRatio="none">
+            <path d="M0,200 C200,200 300,100 0,150 L0,200 Z" fill="#6d2828" />
+            <path d="M0,200 C150,180 250,50 0,100 L0,200 Z" fill="#d97706" />
+            <path d="M0,200 L800,200 L800,150 C600,220 400,80 0,180 Z" fill="#6d2828" />
+            <path d="M0,200 L800,200 L800,180 C500,220 300,120 0,190 Z" fill="#d97706" />
+          </svg>
+
+          <div class="content-wrapper">
+            <div class="logo-area">
+              <!-- Mock Eagle Logo with CSS/SVG -->
+              <svg class="logo-icon" viewBox="0 0 100 60">
+                <ellipse cx="50" cy="30" rx="40" ry="20" fill="none" stroke="#1e3a8a" stroke-width="2"/>
+                <path d="M20,30 Q50,0 80,30 Q50,40 20,30 Z" fill="#1e3a8a" />
+                <path d="M30,30 Q50,10 70,30" fill="none" stroke="#fff" stroke-width="2" />
+                <circle cx="50" cy="25" r="3" fill="#fff" />
+              </svg>
+              <h1 class="company-name">CRK VISIONERA</h1>
+              <p class="company-sub">Technologies Pvt Ltd</p>
+            </div>
+
+            <div class="title-area">
+              <h2 class="doc-title">QUOTATION FOR ${qt.project.toUpperCase()}</h2>
+              <p class="doc-date">Date: ${qt.date}</p>
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th width="5%">No.</th>
+                  <th width="50%">Description</th>
+                  <th width="10%">Quantity</th>
+                  <th width="15%">Price</th>
+                  <th width="20%">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>${qt.project} (Development & Setup)</td>
+                  <td>1</td>
+                  <td>${fmt(qt.actualPrice || qt.amount)}</td>
+                  <td>${fmt(qt.actualPrice || qt.amount)}</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>Software Installation & Initial Configuration</td>
+                  <td>1</td>
+                  <td>Included</td>
+                  <td>0</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>Server Deployment (Hardware Provided by Client)</td>
+                  <td>1</td>
+                  <td>Included</td>
+                  <td>0</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>Staff Training & Handover</td>
+                  <td>1</td>
+                  <td>Complimentary</td>
+                  <td>0</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="bottom-grid">
+              <div class="terms">
+                <h4>Terms & Conditions:</h4>
+                <ul>
+                  <li>The scope includes only the agreed features and functionalities. Any additional work will be charged extra after submitting the project.</li>
+                  <li>The software will be installed on the client's local system/server. Required hardware must be provided by the client.</li>
+                  <li>The client agrees to provide all necessary information, data, and approvals within the agreed timeframe. Any delay from the client's side may impact the project schedule, and the revised delivery timeline will be adjusted accordingly.</li>
+                  <li>By confirming this quotation, the client agrees to all the terms and conditions stated above. A 30% advance payment is required to initiate the project, and the remaining 70% balance must be paid upon completion.</li>
+                  <li>The quotation is valid for "15 days" from the date of issue.</li>
+                </ul>
+              </div>
+
+              <div>
+                <div class="summary">
+                  <div class="summary-row">
+                    <span>SUB TOTAL -</span>
+                    <span class="summary-val">${fmt(qt.actualPrice || qt.amount)}</span>
+                  </div>
+                  <div class="summary-row">
+                    <span>DISCOUNT -</span>
+                    <span class="summary-val">${fmt(qt.discount || 0)}</span>
+                  </div>
+                  <div class="summary-row total-row">
+                    <span>TOTAL</span>
+                    <span class="summary-val">${fmt(qt.amount)}</span>
+                  </div>
+                </div>
+
+                <div class="signature-area">
+                  <!-- Circular Stamp Mock -->
+                  <svg class="stamp" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#333" stroke-width="1.5" stroke-dasharray="4 2"/>
+                    <circle cx="50" cy="50" r="35" fill="none" stroke="#333" stroke-width="1"/>
+                    <path d="M30,50 Q50,30 70,50 Q50,55 30,50 Z" fill="#555" />
+                    <text x="50" y="20" font-size="8" text-anchor="middle" fill="#333" transform="rotate(20 50 50)">CRK VISIONERA TECH</text>
+                    <text x="50" y="88" font-size="8" text-anchor="middle" fill="#333" transform="rotate(-20 50 50)">PVT LTD</text>
+                  </svg>
+                  
+                  <!-- Signature Mock -->
+                  <svg class="signature-img" viewBox="0 0 150 50">
+                    <path d="M10,40 Q20,10 30,30 T50,20 T70,35 T90,15 T110,40 T130,25" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M20,35 L140,20" fill="none" stroke="#111" stroke-width="1" opacity="0.5"/>
+                  </svg>
+                  
+                  <div class="auth-text">Authorized Signature</div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="details">
-            <p><strong>Client:</strong> ${qt.client}</p>
-            <p><strong>Project:</strong> ${qt.project}</p>
-            <p><strong>Status:</strong> ${qt.status}</p>
-          </div>
-          <table style="width:100%; text-align:left; border-collapse:collapse;">
-            <tr style="background:#eee;"><th style="padding:10px;">Description</th><th style="padding:10px;text-align:right;">Amount</th></tr>
-            <tr><td style="padding:10px;">${qt.project}</td><td style="padding:10px;text-align:right;">₹${qt.actualPrice || qt.amount}</td></tr>
-            ${qt.discount ? `<tr><td style="padding:10px;">Discount</td><td style="padding:10px;text-align:right;color:red;">- ₹${qt.discount}</td></tr>` : ''}
-          </table>
-          <div class="total">
-            Total Amount: ₹${qt.amount.toLocaleString()}
-          </div>
+
           <script>
-            window.onload = () => { window.print(); window.close(); }
+            window.onload = () => { 
+              setTimeout(() => {
+                window.print(); 
+                window.close(); 
+              }, 300);
+            }
           </script>
         </body>
       </html>
