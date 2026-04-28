@@ -21,9 +21,9 @@ import { useData } from '@/hooks/useData';
 const MOCK_EMPLOYEES = [];
 
 const DIRECTORS = [
-  { name: 'Director A', share: 40, color: 'bg-indigo-500' },
-  { name: 'Director B', share: 35, color: 'bg-purple-500' },
-  { name: 'Director C', share: 25, color: 'bg-amber-500' },
+  { name: 'Director A', share: 33.33, color: 'bg-indigo-500' },
+  { name: 'Director B', share: 33.33, color: 'bg-purple-500' },
+  { name: 'Director C', share: 33.33, color: 'bg-amber-500' },
 ];
 
 const Payroll = () => {
@@ -52,7 +52,7 @@ const Payroll = () => {
   const directorSplits = useMemo(() => {
     return DIRECTORS.map(d => ({
       ...d,
-      amount: (totalProfit * d.share) / 100
+      amount: totalProfit / DIRECTORS.length
     }));
   }, [totalProfit]);
 
