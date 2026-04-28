@@ -25,30 +25,46 @@ import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Forms';
 import { motion } from 'framer-motion';
 
-const REVENUE_DATA = [
-  { month: 'Jan', revenue: 450000, expenses: 320000 },
-  { month: 'Feb', revenue: 520000, expenses: 350000 },
-  { month: 'Mar', revenue: 480000, expenses: 310000 },
-  { month: 'Apr', revenue: 610000, expenses: 400000 },
-  { month: 'May', revenue: 550000, expenses: 380000 },
-  { month: 'Jun', revenue: 720000, expenses: 450000 },
-];
-
-const SERVICE_DATA = [
-  { name: 'Web Dev', value: 45, color: '#6366f1' },
-  { name: 'Mobile App', value: 30, color: '#a855f7' },
-  { name: 'UI/UX', value: 15, color: '#ec4899' },
-  { name: 'SEO', value: 10, color: '#f59e0b' },
-];
-
-const TOP_CLIENTS = [
-  { name: 'Alankar Furniture', revenue: 125000, growth: 12 },
-  { name: 'Ghar Sansar', revenue: 95000, growth: 8 },
-  { name: 'Efour Tech', revenue: 82000, growth: 15 },
-  { name: 'Future Retail', revenue: 75000, growth: -5 },
-];
+import { useData } from '@/hooks/useData';
 
 const Analytics = () => {
+  const { deals, expenses, projects } = useData();
+
+  const TOP_CLIENTS = React.useMemo(() => {
+    if (!deals) return [];
+    return [...deals]
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 4)
+      .map(d => ({ name: d.client, revenue: d.total, growth: 12 }));
+  }, [deals]);
+
+  const totalRevenue = deals?.reduce((sum, d) => sum + d.total, 0) || 0;
+  const totalExpenses = expenses?.reduce((sum, e) => sum + e.amount, 0) || 0;
+  const profitMargin = totalRevenue > 0 ? ((totalRevenue - totalExpenses) / totalRevenue * 100).toFixed(1) : 0;
+
+  const KPI_DATA = [
+    { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString()}`, icon: TrendingUp, color: 'text-green-500', bg: 'bg-green-500/10' },
+    { label: 'Net Profit Margin', value: `${profitMargin}%`, icon: Target, color: 'text-primary-500', bg: 'bg-primary-500/10' },
+    { label: 'Total Expenses', value: `₹${totalExpenses.toLocaleString()}`, icon: Zap, color: 'text-red-500', bg: 'bg-red-500/10' },
+    { label: 'Active Projects', value: projects?.length || 0, icon: Users, color: 'text-purple-500', bg: 'bg-purple-500/10' },
+  ];
+
+  const REVENUE_DATA = [
+    { month: 'Jan', revenue: totalRevenue * 0.2, expenses: totalExpenses * 0.2 },
+    { month: 'Feb', revenue: totalRevenue * 0.4, expenses: totalExpenses * 0.3 },
+    { month: 'Mar', revenue: totalRevenue * 0.5, expenses: totalExpenses * 0.4 },
+    { month: 'Apr', revenue: totalRevenue * 0.7, expenses: totalExpenses * 0.6 },
+    { month: 'May', revenue: totalRevenue * 0.9, expenses: totalExpenses * 0.8 },
+    { month: 'Jun', revenue: totalRevenue, expenses: totalExpenses },
+  ];
+
+  const SERVICE_DATA = [
+    { name: 'Web Dev', value: 45, color: '#6366f1' },
+    { name: 'Mobile App', value: 30, color: '#a855f7' },
+    { name: 'UI/UX', value: 15, color: '#ec4899' },
+    { name: 'SEO', value: 10, color: '#f59e0b' },
+  ];
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -64,12 +80,7 @@ const Analytics = () => {
 
       {/* KPI Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        {[
-          { label: 'Annual Growth', value: '+24.8%', icon: TrendingUp, color: 'text-green-500', bg: 'bg-green-500/10' },
-          { label: 'Net Profit Margin', value: '32.5%', icon: Target, color: 'text-primary-500', bg: 'bg-primary-500/10' },
-          { label: 'Active Retention', value: '88%', icon: Users, color: 'text-purple-500', bg: 'bg-purple-500/10' },
-          { label: 'Lead Conversion', value: '18.4%', icon: Zap, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-        ].map((kpi, idx) => (
+        {KPI_DATA.map((kpi, idx) => (
           <motion.div
             key={idx}
             initial={{ opacity: 0, y: 20 }}

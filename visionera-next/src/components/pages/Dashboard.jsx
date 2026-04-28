@@ -46,7 +46,7 @@ const StatCard = ({ title, value, change, isPositive, icon: Icon, color }) => (
 );
 
 const Dashboard = () => {
-  const { deals, projects, addProject } = useData();
+  const { deals, projects, addProject, quotations } = useData();
   const { addToast } = useToast();
   
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -54,6 +54,19 @@ const Dashboard = () => {
 
   const totalRevenue = useMemo(() => deals.reduce((acc, curr) => acc + curr.total, 0), [deals]);
   const activeProjectsCount = useMemo(() => projects.filter(p => p.status !== 'Completed').length, [projects]);
+  
+  const totalClients = useMemo(() => {
+    const clients = new Set();
+    deals.forEach(d => clients.add(d.client));
+    projects.forEach(p => clients.add(p.client));
+    return clients.size;
+  }, [deals, projects]);
+
+  const quotationSuccess = useMemo(() => {
+    if (!quotations || quotations.length === 0) return 0;
+    const accepted = quotations.filter(q => q.status === 'Accepted').length;
+    return Math.round((accepted / quotations.length) * 100);
+  }, [quotations]);
 
   const handleAddProject = (e) => {
     e.preventDefault();
@@ -86,8 +99,8 @@ const Dashboard = () => {
   const stats = [
     { title: 'Total Revenue', value: `₹${totalRevenue.toLocaleString()}`, change: 12.5, isPositive: true, icon: DollarSign, color: 'bg-blue-500' },
     { title: 'Active Projects', value: activeProjectsCount.toString(), change: 4.3, isPositive: true, icon: Briefcase, color: 'bg-purple-500' },
-    { title: 'Total Clients', value: '452', change: 2.1, isPositive: false, icon: Users, color: 'bg-orange-500' },
-    { title: 'Quotation Success', value: '64%', change: 8.4, isPositive: true, icon: TrendingUp, color: 'bg-emerald-500' },
+    { title: 'Total Clients', value: totalClients.toString(), change: 2.1, isPositive: false, icon: Users, color: 'bg-orange-500' },
+    { title: 'Quotation Success', value: `${quotationSuccess}%`, change: 8.4, isPositive: true, icon: TrendingUp, color: 'bg-emerald-500' },
   ];
 
   return (
