@@ -15,7 +15,7 @@ const Navbar = ({ onMenuClick }) => {
   }, []);
 
   return (
-    <header className="sticky top-0 z-30 h-20 bg-white/60 dark:bg-dark-card/40 backdrop-blur-2xl border-b border-white/20 dark:border-white/5 shadow-sm flex items-center px-4 lg:px-8">
+    <header className="sticky top-0 z-30 h-20 bg-white/60 dark:bg-dark-card/40 backdrop-blur-lg border-b border-white/20 dark:border-white/5 shadow-sm flex items-center px-4 lg:px-8 transform-gpu">
       {/* Mobile Menu Trigger */}
       <button
         onClick={onMenuClick}

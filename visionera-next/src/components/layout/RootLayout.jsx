@@ -20,10 +20,10 @@ const RootLayoutWrapper = ({ children }) => {
   if (pathname === '/login') return <>{children}</>;
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-dark-bg transition-colors duration-300 relative overflow-hidden">
-      {/* Premium Ambient Background Orbs */}
-      <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary-500/20 blur-[120px] pointer-events-none z-0" />
-      <div className="fixed bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-500/10 blur-[120px] pointer-events-none z-0" />
+    <div className="flex min-h-screen bg-slate-50 dark:bg-dark-bg transition-colors duration-300 relative overflow-hidden transform-gpu">
+      {/* Premium Ambient Background Orbs - Optimized */}
+      <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary-500/10 blur-[60px] pointer-events-none z-0 transform-gpu" />
+      <div className="fixed bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-500/5 blur-[60px] pointer-events-none z-0 transform-gpu" />
       
       <Sidebar 
         isOpen={isSidebarOpen} 
