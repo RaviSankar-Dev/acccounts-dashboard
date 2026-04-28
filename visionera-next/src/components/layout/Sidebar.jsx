@@ -86,8 +86,8 @@ const Sidebar = ({ isOpen, onClose }) => {
         variants={variants}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
         className={`
-          fixed top-0 left-0 bottom-0 w-[280px] bg-white dark:bg-dark-card 
-          border-r border-slate-200 dark:border-dark-border z-50
+          fixed top-0 left-0 bottom-0 w-[280px] bg-white/80 dark:bg-dark-card/60 backdrop-blur-3xl
+          border-r border-white/20 dark:border-white/5 shadow-[5px_0_30px_rgba(0,0,0,0.02)] dark:shadow-[5px_0_30px_rgba(0,0,0,0.2)] z-50
           flex flex-col lg:relative lg:translate-x-0 shrink-0
         `}
       >
